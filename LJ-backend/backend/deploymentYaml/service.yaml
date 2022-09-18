@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: notification-dev
+  annotations:
+    a8r.io/description: "Scribe Rabbit Notification API"
+    a8r.io/owner: "Scribe Rabbit"
+    a8r.io/chat: "#ScribeRabbit"
+    a8r.io/bugs: "https://github.com/sentient-io/SG-Service-Notification/issues"
+    a8r.io/documentation: "https://github.com/sentient-io/SG-Service-Notification"
+    a8r.io/repository: asia.gcr.io/scriberabbit-beta-dev/notification-dev-api:0.0.1
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5000
+  selector:
+    app: notification-service

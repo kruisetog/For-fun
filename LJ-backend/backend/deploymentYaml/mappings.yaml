@@ -1,0 +1,9 @@
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: notification-service
+  namespace: notification-dev
+spec:
+  prefix: /notification/
+  service: notification-service

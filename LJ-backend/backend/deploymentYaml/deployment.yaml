@@ -1,0 +1,90 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: notification-dev
+  labels:
+    app: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: general-pool
+      containers:
+      - name: notification-dev-api
+        image: asia.gcr.io/ps-labs-solomon/notification-dev-api:0.0.7
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 5000
+        livenessProbe:
+          httpGet:
+           path: /probes/healthz
+           port: 8000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          periodSeconds: 30
+          failureThreshold: 3
+        env:
+        - name: POSTGRES_USERNAME # The name of env variable
+          valueFrom:
+            secretKeyRef:
+              name: notification-secrets # The name of the secret
+              key: POSTGRES_USERNAME # The name of the variable stored in the secret
+        - name: POSTGRES_PASSWORD 
+          valueFrom:
+            secretKeyRef:
+              name: notification-secrets
+              key: POSTGRES_PASSWORD 
+        - name: POSTGRES_DB 
+          valueFrom:
+            secretKeyRef:
+              name: notification-secrets
+              key: POSTGRES_DB
+        - name: POSTGRES_HOST 
+          valueFrom:
+            secretKeyRef:
+              name: notification-secrets
+              key: POSTGRES_HOST 
+        - name: POSTGRES_DB 
+          valueFrom:
+            secretKeyRef:
+              name: notification-secrets
+              key: POSTGRES_DB 
+        - name: POSTGRES_PORT
+          valueFrom:
+            secretKeyRef:
+              name: notification-secrets
+              key: POSTGRES_PORT 
+        - name: TIME_ZONE 
+          valueFrom:
+            secretKeyRef:
+              name: notification-secrets
+              key: TIME_ZONE 
+        - name: ENV_MODE 
+          valueFrom:
+            secretKeyRef:
+              name: notification-secrets
+              key: ENV_MODE 
+        - name: NATS_HOST # The name of env variable
+          valueFrom:
+            secretKeyRef:
+              name: notification-secrets # The name of the secret
+              key: NATS_HOST # The name of the variable stored in the secret
+        - name: NATS_PORT
+          valueFrom:
+            secretKeyRef:
+              name: notification-secrets # The name of the ConfigMap
+              key: NATS_PORT # The name of the variable stored in the ConfigMap
+        - name: PYTHONUNBUFFERED
+          value: "1" # set to show print
